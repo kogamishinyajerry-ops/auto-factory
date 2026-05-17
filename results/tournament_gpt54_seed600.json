@@ -1,0 +1,394 @@
+{
+  "workers": 4,
+  "budget_sec": 90.0,
+  "eval_maps": 30,
+  "bench_maps": 50,
+  "llm_seed_latency_sec": 43.32,
+  "elapsed_sec": 156.0,
+  "worker_results": [
+    {
+      "worker": 0,
+      "score": 38.096,
+      "n_strategies": 5,
+      "strategies": [
+        {
+          "lane_y_set": "y_narrow",
+          "asm_x_pattern": "all16",
+          "smelter_offset": 3,
+          "miner_pick": "min_route",
+          "max_route_dist": 10,
+          "resource_pattern": "all_ic"
+        },
+        {
+          "lane_y_set": "y_dense",
+          "asm_x_pattern": "stagger17_15",
+          "smelter_offset": 3,
+          "miner_pick": "closest_y",
+          "max_route_dist": 25,
+          "resource_pattern": "all_cuoi"
+        },
+        {
+          "lane_y_set": "y_default",
+          "asm_x_pattern": "stagger15_17",
+          "smelter_offset": 3,
+          "miner_pick": "closest_y",
+          "max_route_dist": 25,
+          "resource_pattern": "rotate_all"
+        },
+        {
+          "lane_y_set": "y_default",
+          "asm_x_pattern": "stagger17_15",
+          "smelter_offset": 3,
+          "miner_pick": "leftmost",
+          "max_route_dist": null,
+          "resource_pattern": "rotate4"
+        },
+        {
+          "lane_y_set": "y_narrow",
+          "asm_x_pattern": "all15",
+          "smelter_offset": 3,
+          "miner_pick": "closest_y",
+          "max_route_dist": 18,
+          "resource_pattern": "all_ic"
+        }
+      ],
+      "seed_portfolio": {
+        "strategies": [
+          {
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "all17",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": null,
+            "resource_pattern": "all_ic"
+          }
+        ]
+      }
+    },
+    {
+      "worker": 1,
+      "score": 35.574,
+      "n_strategies": 5,
+      "strategies": [
+        {
+          "lane_y_set": "y_v1",
+          "asm_x_pattern": "all16",
+          "smelter_offset": 3,
+          "miner_pick": "min_route",
+          "max_route_dist": 18,
+          "resource_pattern": "rotate_all"
+        },
+        {
+          "lane_y_set": "y_shift",
+          "asm_x_pattern": "stagger17_15",
+          "smelter_offset": 4,
+          "miner_pick": "leftmost",
+          "max_route_dist": null,
+          "resource_pattern": "rotate_all"
+        },
+        {
+          "lane_y_set": "y_default",
+          "asm_x_pattern": "stagger17_16",
+          "smelter_offset": 4,
+          "miner_pick": "leftmost",
+          "max_route_dist": 10,
+          "resource_pattern": "all_kool"
+        },
+        {
+          "lane_y_set": "y_dense",
+          "asm_x_pattern": "all16",
+          "smelter_offset": 4,
+          "miner_pick": "closest_y",
+          "max_route_dist": null,
+          "resource_pattern": "rotate_all"
+        },
+        {
+          "lane_y_set": "y_dense",
+          "asm_x_pattern": "stagger15_17",
+          "smelter_offset": 4,
+          "miner_pick": "closest_y",
+          "max_route_dist": 10,
+          "resource_pattern": "all_ic"
+        }
+      ],
+      "seed_portfolio": {
+        "strategies": [
+          {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "stagger17_15",
+            "smelter_offset": 2,
+            "miner_pick": "min_route",
+            "max_route_dist": 10,
+            "resource_pattern": "rotate4"
+          },
+          {
+            "lane_y_set": "y_pair",
+            "asm_x_pattern": "all15",
+            "smelter_offset": 2,
+            "miner_pick": "leftmost",
+            "max_route_dist": 12,
+            "resource_pattern": "all_iko"
+          }
+        ]
+      }
+    },
+    {
+      "worker": 2,
+      "score": 37.198,
+      "n_strategies": 5,
+      "strategies": [
+        {
+          "lane_y_set": "y_dense",
+          "asm_x_pattern": "all15",
+          "smelter_offset": 2,
+          "miner_pick": "closest_y",
+          "max_route_dist": 18,
+          "resource_pattern": "all_ic"
+        },
+        {
+          "lane_y_set": "y_narrow",
+          "asm_x_pattern": "stagger17_16",
+          "smelter_offset": 4,
+          "miner_pick": "closest_y",
+          "max_route_dist": 12,
+          "resource_pattern": "all_cuoi"
+        },
+        {
+          "lane_y_set": "y_v1",
+          "asm_x_pattern": "all17",
+          "smelter_offset": 3,
+          "miner_pick": "min_route",
+          "max_route_dist": 25,
+          "resource_pattern": "rotate_all"
+        },
+        {
+          "lane_y_set": "y_shift",
+          "asm_x_pattern": "stagger17_15",
+          "smelter_offset": 2,
+          "miner_pick": "closest_y",
+          "max_route_dist": null,
+          "resource_pattern": "rotate_all"
+        },
+        {
+          "lane_y_set": "y_dense",
+          "asm_x_pattern": "all15",
+          "smelter_offset": 2,
+          "miner_pick": "min_route",
+          "max_route_dist": 10,
+          "resource_pattern": "all_iko"
+        }
+      ],
+      "seed_portfolio": {
+        "strategies": [
+          {
+            "lane_y_set": "y_shift",
+            "asm_x_pattern": "stagger17_16",
+            "smelter_offset": 4,
+            "miner_pick": "min_route",
+            "max_route_dist": 15,
+            "resource_pattern": "all_cuoi"
+          },
+          {
+            "lane_y_set": "y_narrow",
+            "asm_x_pattern": "all16",
+            "smelter_offset": 4,
+            "miner_pick": "leftmost",
+            "max_route_dist": 12,
+            "resource_pattern": "all_kool"
+          },
+          {
+            "lane_y_set": "y_shift",
+            "asm_x_pattern": "stagger15_17",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": 18,
+            "resource_pattern": "rotate_all"
+          }
+        ]
+      }
+    },
+    {
+      "worker": 3,
+      "score": 36.729,
+      "n_strategies": 5,
+      "strategies": [
+        {
+          "lane_y_set": "y_default",
+          "asm_x_pattern": "all17",
+          "smelter_offset": 3,
+          "miner_pick": "closest_y",
+          "max_route_dist": 18,
+          "resource_pattern": "rotate_all"
+        },
+        {
+          "lane_y_set": "y_shift",
+          "asm_x_pattern": "all16",
+          "smelter_offset": 2,
+          "miner_pick": "min_route",
+          "max_route_dist": 18,
+          "resource_pattern": "rotate_all"
+        },
+        {
+          "lane_y_set": "y_v1",
+          "asm_x_pattern": "stagger17_16",
+          "smelter_offset": 2,
+          "miner_pick": "leftmost",
+          "max_route_dist": 18,
+          "resource_pattern": "rotate_all"
+        },
+        {
+          "lane_y_set": "y_v1",
+          "asm_x_pattern": "stagger17_15",
+          "smelter_offset": 3,
+          "miner_pick": "min_route",
+          "max_route_dist": null,
+          "resource_pattern": "all_ic"
+        },
+        {
+          "lane_y_set": "y_dense",
+          "asm_x_pattern": "all16",
+          "smelter_offset": 3,
+          "miner_pick": "closest_y",
+          "max_route_dist": 18,
+          "resource_pattern": "rotate_all"
+        }
+      ],
+      "seed_portfolio": {
+        "strategies": [
+          {
+            "lane_y_set": "y_v1",
+            "asm_x_pattern": "all17",
+            "smelter_offset": 4,
+            "miner_pick": "min_route",
+            "max_route_dist": null,
+            "resource_pattern": "all_iko"
+          },
+          {
+            "lane_y_set": "y_v1",
+            "asm_x_pattern": "stagger17_16",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": 25,
+            "resource_pattern": "all_cuoi"
+          },
+          {
+            "lane_y_set": "y_v1",
+            "asm_x_pattern": "all16",
+            "smelter_offset": 2,
+            "miner_pick": "leftmost",
+            "max_route_dist": 18,
+            "resource_pattern": "all_ic"
+          },
+          {
+            "lane_y_set": "y_v1",
+            "asm_x_pattern": "stagger17_15",
+            "smelter_offset": 4,
+            "miner_pick": "min_route",
+            "max_route_dist": null,
+            "resource_pattern": "rotate_all"
+          }
+        ]
+      }
+    }
+  ],
+  "n_merged_strategies": 12,
+  "merged_bench_score": 41.158,
+  "merged_strategies": [
+    {
+      "lane_y_set": "y_default",
+      "asm_x_pattern": "stagger17_15",
+      "smelter_offset": 3,
+      "miner_pick": "leftmost",
+      "max_route_dist": null,
+      "resource_pattern": "rotate4"
+    },
+    {
+      "lane_y_set": "y_dense",
+      "asm_x_pattern": "all16",
+      "smelter_offset": 3,
+      "miner_pick": "closest_y",
+      "max_route_dist": 18,
+      "resource_pattern": "rotate_all"
+    },
+    {
+      "lane_y_set": "y_shift",
+      "asm_x_pattern": "stagger17_15",
+      "smelter_offset": 4,
+      "miner_pick": "leftmost",
+      "max_route_dist": null,
+      "resource_pattern": "rotate_all"
+    },
+    {
+      "lane_y_set": "y_dense",
+      "asm_x_pattern": "all15",
+      "smelter_offset": 2,
+      "miner_pick": "closest_y",
+      "max_route_dist": 18,
+      "resource_pattern": "all_ic"
+    },
+    {
+      "lane_y_set": "y_dense",
+      "asm_x_pattern": "all16",
+      "smelter_offset": 4,
+      "miner_pick": "closest_y",
+      "max_route_dist": null,
+      "resource_pattern": "rotate_all"
+    },
+    {
+      "lane_y_set": "y_default",
+      "asm_x_pattern": "all17",
+      "smelter_offset": 3,
+      "miner_pick": "closest_y",
+      "max_route_dist": 18,
+      "resource_pattern": "rotate_all"
+    },
+    {
+      "lane_y_set": "y_shift",
+      "asm_x_pattern": "stagger17_15",
+      "smelter_offset": 2,
+      "miner_pick": "closest_y",
+      "max_route_dist": null,
+      "resource_pattern": "rotate_all"
+    },
+    {
+      "lane_y_set": "y_default",
+      "asm_x_pattern": "stagger15_17",
+      "smelter_offset": 3,
+      "miner_pick": "closest_y",
+      "max_route_dist": 25,
+      "resource_pattern": "rotate_all"
+    },
+    {
+      "lane_y_set": "y_narrow",
+      "asm_x_pattern": "all15",
+      "smelter_offset": 3,
+      "miner_pick": "closest_y",
+      "max_route_dist": 18,
+      "resource_pattern": "all_ic"
+    },
+    {
+      "lane_y_set": "y_v1",
+      "asm_x_pattern": "stagger17_16",
+      "smelter_offset": 2,
+      "miner_pick": "leftmost",
+      "max_route_dist": 18,
+      "resource_pattern": "rotate_all"
+    },
+    {
+      "lane_y_set": "y_v1",
+      "asm_x_pattern": "all17",
+      "smelter_offset": 3,
+      "miner_pick": "min_route",
+      "max_route_dist": 25,
+      "resource_pattern": "rotate_all"
+    },
+    {
+      "lane_y_set": "y_v1",
+      "asm_x_pattern": "stagger17_15",
+      "smelter_offset": 3,
+      "miner_pick": "min_route",
+      "max_route_dist": null,
+      "resource_pattern": "all_ic"
+    }
+  ]
+}
