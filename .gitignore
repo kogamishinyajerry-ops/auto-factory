@@ -11,7 +11,9 @@ results/diff/
 
 # tournament.py spawns per-worker copies; only keep the merged result.
 factory_plan_w*.py
+factory_plan_llm_w*.py
 results/_workers/
+results/_workers_llm_seeded/
 
 # Keep only narrative-quality outputs in git:
 #   results/checkpoint*.png  story-arc gallery + progress charts
