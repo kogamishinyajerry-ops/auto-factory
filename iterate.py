@@ -42,19 +42,28 @@ def _now_iso() -> str:
     return _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z")
 
 # Search space PER STRATEGY. iterate.py mutates strategies inside CONFIG["strategies"].
+# Phase B: 5 search dimensions instead of 3 — 6 × 6 × 3 × 3 × 6 = 1944
+# single-strategy configs, exponential in portfolio size.
 SEARCH_SPACE = {
-    "lane_configs": ["default", "rev", "all17", "v1_3lanes", "shift_down", "narrow_4"],
+    "lane_y_set": [
+        "y_default", "y_v1", "y_shift", "y_narrow", "y_dense", "y_pair",
+    ],
+    "asm_x_pattern": [
+        "all17", "all15", "all16",
+        "stagger17_15", "stagger15_17", "stagger17_16",
+    ],
+    "smelter_offset": [2, 3, 4],
     "miner_pick": ["closest_y", "leftmost", "min_route"],
     "max_route_dist": [None, 10, 12, 15, 18, 25],
 }
-# 6 × 3 × 6 = 108 single-strategy configs; portfolios multiply this exponentially.
 
 PORTFOLIO_CAP = 5  # max strategies kept in CONFIG["strategies"]
 
 # Deliberately weak starting config used by --reset.
 RESET_CONFIG = {
     "strategies": [
-        {"lane_configs": "v1_3lanes", "miner_pick": "closest_y", "max_route_dist": None}
+        {"lane_y_set": "y_v1", "asm_x_pattern": "all17", "smelter_offset": 3,
+         "miner_pick": "closest_y", "max_route_dist": None}
     ]
 }
 
@@ -373,7 +382,8 @@ def main() -> int:
 
         if not args.quiet:
             sigs = "|".join(
-                f"{s['lane_configs'][:6]}/{s['miner_pick'][:3]}/{s['max_route_dist']}"
+                f"{s['lane_y_set'][2:6]}/{s['asm_x_pattern'][:5]}/{s['smelter_offset']}/"
+                f"{s['miner_pick'][:3]}/{s['max_route_dist']}"
                 for s in candidate["strategies"]
             )
             print(

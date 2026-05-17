@@ -4,20 +4,20 @@ iterate.py (autonomous mutation loop) rewrites the CONFIG block below
 between the AUTORESEARCH markers. Hand-editing the block is fine; the
 loop will pick up whatever's there as its starting state.
 
-CONFIG schema:
+CONFIG schema (Phase B — expanded search space):
     {
         "strategies": [
-            {"lane_configs":   <key into LANE_CONFIG_SETS>,
+            {"lane_y_set":     <key into LANE_Y_SETS>,
+             "asm_x_pattern":  <key into ASM_X_PATTERNS>,
+             "smelter_offset": 2 | 3 | 4,
              "miner_pick":     "closest_y" | "leftmost" | "min_route",
              "max_route_dist": int or None},
             ...     # one or more strategies
         ]
     }
 
-If "strategies" has one entry, factory_plan == that single strategy.
-If it has multiple entries, factory_plan internally builds and scores
-each one and returns whichever yields the highest score (portfolio
-pattern, same idea as v3_greedy_search but the membership is mutable).
+When strategies has >1 entry, plan() runs each, scores internally, and
+returns the best on this map (portfolio / Mixture-of-Experts pattern).
 
 Score = widgets_per_minute
       - 0.500   * belt_crossings
@@ -28,9 +28,35 @@ Score = widgets_per_minute
 
 from __future__ import annotations
 
-from auto_factory import GameMap, Plan, score_plan, simulate
+from typing import Callable, Dict, List
 
-from plans.v3_greedy_search import LANE_CONFIG_SETS, _build_candidate
+from auto_factory import GameMap, Plan, build_from_spec, score_plan, simulate
+
+
+# ---- declarative search dimensions iterate.py mutates over -------------
+
+LANE_Y_SETS: Dict[str, List[int]] = {
+    "y_default": [1, 4, 7, 10, 13],   # 5 evenly spaced
+    "y_v1":      [2, 7, 12],          # v1's 3 lanes
+    "y_shift":   [2, 5, 8, 11, 14],   # 5 shifted down
+    "y_narrow":  [2, 5, 8, 11],       # top-heavy 4 lanes
+    "y_dense":   [1, 3, 5, 7, 9, 11, 13],  # 7 thin lanes (often partial)
+    "y_pair":    [3, 11],             # 2 lanes far apart
+}
+
+# Each pattern is a function from "number of lanes" to list of asm_x columns.
+ASM_X_PATTERNS: Dict[str, Callable[[int], List[int]]] = {
+    "all17":         lambda n: [17] * n,
+    "all15":         lambda n: [15] * n,
+    "all16":         lambda n: [16] * n,
+    "stagger17_15":  lambda n: [17 if i % 2 == 0 else 15 for i in range(n)],
+    "stagger15_17":  lambda n: [15 if i % 2 == 0 else 17 for i in range(n)],
+    "stagger17_16":  lambda n: [17 if i % 2 == 0 else 16 for i in range(n)],
+}
+
+SMELTER_OFFSETS = [2, 3, 4]
+MINER_PICKS = ["closest_y", "leftmost", "min_route"]
+MAX_ROUTE_VALUES = [None, 10, 12, 15, 18, 25]
 
 
 # === AUTORESEARCH CONFIG START ===
@@ -38,60 +64,68 @@ from plans.v3_greedy_search import LANE_CONFIG_SETS, _build_candidate
 CONFIG = {
     "strategies": [
         {
-            "lane_configs": "all17",
+            "lane_y_set": "y_narrow",
+            "asm_x_pattern": "stagger15_17",
+            "smelter_offset": 2,
             "miner_pick": "closest_y",
             "max_route_dist": None
         },
         {
-            "lane_configs": "shift_down",
-            "miner_pick": "leftmost",
-            "max_route_dist": 25
-        },
-        {
-            "lane_configs": "all17",
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "stagger17_16",
+            "smelter_offset": 2,
             "miner_pick": "min_route",
-            "max_route_dist": 25
+            "max_route_dist": 10
         },
         {
-            "lane_configs": "shift_down",
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "all16",
+            "smelter_offset": 4,
             "miner_pick": "closest_y",
-            "max_route_dist": 25
+            "max_route_dist": 18
         },
         {
-            "lane_configs": "rev",
+            "lane_y_set": "y_shift",
+            "asm_x_pattern": "stagger17_15",
+            "smelter_offset": 4,
             "miner_pick": "min_route",
-            "max_route_dist": 12
+            "max_route_dist": 15
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "stagger17_15",
+            "smelter_offset": 2,
+            "miner_pick": "min_route",
+            "max_route_dist": 10
         }
     ]
 }
 # === AUTORESEARCH CONFIG END ===
 
-# Ticks used for in-planner scoring when the portfolio has >1 strategy.
-# Match eval.py default so the picked strategy is the one that's actually
-# best at the metric the harness will judge it on.
 _INTERNAL_EVAL_TICKS = 600
+
+
+def _expand_strategy(s: dict) -> dict:
+    lane_ys = LANE_Y_SETS[s["lane_y_set"]]
+    asm_xs = ASM_X_PATTERNS[s["asm_x_pattern"]](len(lane_ys))
+    return {
+        "lane_ys": lane_ys,
+        "asm_xs": asm_xs,
+        "smelter_offset": s["smelter_offset"],
+        "miner_pick": s["miner_pick"],
+        "max_route_dist": s.get("max_route_dist"),
+    }
 
 
 def plan(gmap: GameMap) -> Plan:
     strategies = CONFIG["strategies"]
     if len(strategies) == 1:
-        s = strategies[0]
-        return _build_candidate(
-            gmap,
-            LANE_CONFIG_SETS[s["lane_configs"]],
-            s["miner_pick"],
-            s["max_route_dist"],
-        )
+        return build_from_spec(gmap, _expand_strategy(strategies[0]))
 
     best_plan = Plan()
     best_score = float("-inf")
     for s in strategies:
-        candidate = _build_candidate(
-            gmap,
-            LANE_CONFIG_SETS[s["lane_configs"]],
-            s["miner_pick"],
-            s["max_route_dist"],
-        )
+        candidate = build_from_spec(gmap, _expand_strategy(s))
         sim = simulate(candidate, gmap, ticks=_INTERNAL_EVAL_TICKS)
         sb = score_plan(sim)
         if sb.total > best_score:

@@ -13,6 +13,7 @@ from .sim import simulate
 from .score import score_plan
 from .viz import render_ascii, render_png
 from .routing import lay_belts
+from .builder import build_from_spec
 
 __all__ = [
     "Resource",
@@ -29,4 +30,5 @@ __all__ = [
     "render_ascii",
     "render_png",
     "lay_belts",
+    "build_from_spec",
 ]
