@@ -9,6 +9,10 @@ results/_gallery_tmp/
 results/plans/
 results/diff/
 
+# tournament.py spawns per-worker copies; only keep the merged result.
+factory_plan_w*.py
+results/_workers/
+
 # Keep only narrative-quality outputs in git:
 #   results/checkpoint*.png  story-arc gallery + progress charts
 #   results/runs.jsonl       cross-run bench history

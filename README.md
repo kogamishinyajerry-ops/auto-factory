@@ -14,23 +14,42 @@ hundreds of plans is wall-clock cheap.
 
 ## Headline result
 
-After 90 seconds of autonomous mutation starting from a deliberately weak
-baseline (17.4 mean score, 50-seed bench), the loop discovered a
-5-strategy portfolio scoring **26.38** — within 2 % of a hand-curated
-7-strategy planner that took human iteration to design.
+After spawning 4 parallel `iterate.py` workers for 90 seconds each
+(360 worker-seconds total wall-clock = 90s real time), then merging
+their discovered strategies into a single 12-strategy portfolio, the
+autonomous system landed at **29.56 mean** — surpassing every
+hand-written baseline including the carefully tuned v3 (26.85).
 
-| planner | mean score | best | mean widgets/min | notes |
-|---|---|---|---|---|
-| `plans.v3_greedy_search` | **26.85** | 77.20 | 40.36 | hand-curated 7-strategy portfolio |
-| `factory_plan` (autonomous) | **26.38** | 76.88 | 39.76 | discovered by `iterate.py` in 90 s |
-| `plans.v2_dense_lanes` | 18.43 | 77.20 | 29.04 | 5-lane single strategy |
-| `plans.v1_multi_lane` | 17.36 | 57.63 | 26.68 | 3-lane single strategy |
-| `plans.v0_naive` | 1.20 | 20.07 | 14.85 | single L-chain baseline |
+| planner | mean score | best | worst | mean WPM | notes |
+|---|---|---|---|---|---|
+| `factory_plan` (tournament-merged) | **29.56** | 77.04 | **18.87** | 44.50 | 4 workers × 90 s, diversity-merged 12 strategies |
+| `plans.v3_greedy_search` | 26.85 | 77.20 | 0.00 | 40.36 | hand-curated 7-strategy portfolio |
+| `plans.v2_dense_lanes` | 18.43 | 77.20 | -5.94 | 29.04 | 5-lane single strategy |
+| `plans.v1_multi_lane` | 17.36 | 57.63 | 0.00 | 26.68 | 3-lane single strategy |
+| `plans.v0_naive` | 1.20 | 20.07 | -19.30 | 14.85 | single L-chain baseline |
 
-![convergence](results/checkpoint3_portfolio_progress.png)
+The killer stat is **worst-case = 18.87**: the merged portfolio is
+diverse enough that it always finds *some* working layout on every map,
+where every other baseline returns a degenerate plan on at least one
+seed.
 
-Eight accepted mutations, 42 attempts, clean staircase shape — the green
-circles are accepts, the red line is running-best.
+![tournament](results/checkpoint5_tournament.png)
+
+Four parallel workers each climb a slightly different staircase from
+~17 to ~28. Independently they top out near 28; merged, they reach
+29.56 because each worker's portfolio covers different seeds.
+
+The single best non-tournament run (`iterate.py` alone, 180 s, expanded
+search space) reached **28.93** — already past v3. Tournament adds
+another 0.6 points by combining what each worker found locally.
+
+![single-run convergence](results/checkpoint4_expanded_progress.png)
+
+For the smaller search space (3 dimensions instead of 5), a 90 s single
+run plateaus at 26.38 — the diversity of the larger search space and
+the parallelism of the tournament are both load-bearing.
+
+![small-space convergence](results/checkpoint3_portfolio_progress.png)
 
 ## Try it
 
@@ -41,10 +60,14 @@ python3 bench.py --maps 50
 # autonomous loop: mutate factory_plan.py until 90 s is up
 python3 iterate.py --budget-sec 90 --eval-maps 50 --reset
 
+# parallel tournament: 4 workers, 90 s each, diversity-merged
+python3 tournament.py --workers 4 --budget-sec 90 --eval-maps 50
+
 # pretty pictures
-python3 progress.py             # convergence curve of last iterate run
+python3 progress.py                          # single-run convergence curve
+python3 tournament_progress.py               # 4-worker overlaid curves
 python3 gallery.py --seeds 25 17 18 --planners plans.v1_multi_lane plans.v3_greedy_search factory_plan
-python3 histogram.py            # score distribution across all logged runs
+python3 histogram.py                         # score distribution across all logged runs
 
 # side-by-side A/B on one seed
 python3 diff.py --seed 22 --planner factory_plan --baseline plans.v0_naive
@@ -75,10 +98,12 @@ factory_plan.py      ─── live edit surface; iterate.py mutates the
 eval.py              ─── 50-map deterministic bench, writes runs.jsonl
 bench.py             ─── side-by-side planner comparison table
 iterate.py           ─── autonomous hill-climber that rewrites factory_plan.py
+tournament.py        ─── parallel iterate workers + diversity merge
 gallery.py           ─── N×M planner-by-seed PNG grid
 histogram.py         ─── score distribution per planner
 diff.py              ─── A/B render on a single seed
 progress.py          ─── convergence chart from iterate.jsonl
+tournament_progress.py ─── overlay K worker curves + merged-score annotation
 leaderboard.py       ─── reads runs.jsonl
 ```
 

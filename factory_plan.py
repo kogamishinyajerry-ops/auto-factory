@@ -64,39 +64,88 @@ MAX_ROUTE_VALUES = [None, 10, 12, 15, 18, 25]
 CONFIG = {
     "strategies": [
         {
-            "lane_y_set": "y_narrow",
-            "asm_x_pattern": "stagger15_17",
-            "smelter_offset": 2,
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "stagger17_16",
+            "smelter_offset": 4,
             "miner_pick": "closest_y",
-            "max_route_dist": None
+            "max_route_dist": 15
         },
         {
             "lane_y_set": "y_default",
             "asm_x_pattern": "stagger17_16",
             "smelter_offset": 2,
-            "miner_pick": "min_route",
-            "max_route_dist": 10
-        },
-        {
-            "lane_y_set": "y_default",
-            "asm_x_pattern": "all16",
-            "smelter_offset": 4,
             "miner_pick": "closest_y",
-            "max_route_dist": 18
+            "max_route_dist": 25
         },
         {
             "lane_y_set": "y_shift",
             "asm_x_pattern": "stagger17_15",
             "smelter_offset": 4,
             "miner_pick": "min_route",
-            "max_route_dist": 15
+            "max_route_dist": None
         },
         {
             "lane_y_set": "y_dense",
-            "asm_x_pattern": "stagger17_15",
+            "asm_x_pattern": "all15",
             "smelter_offset": 2,
-            "miner_pick": "min_route",
-            "max_route_dist": 10
+            "miner_pick": "closest_y",
+            "max_route_dist": None
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "all15",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": 15
+        },
+        {
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "all15",
+            "smelter_offset": 4,
+            "miner_pick": "closest_y",
+            "max_route_dist": 25
+        },
+        {
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "all15",
+            "smelter_offset": 4,
+            "miner_pick": "closest_y",
+            "max_route_dist": None
+        },
+        {
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "all17",
+            "smelter_offset": 2,
+            "miner_pick": "leftmost",
+            "max_route_dist": None
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "stagger17_16",
+            "smelter_offset": 4,
+            "miner_pick": "leftmost",
+            "max_route_dist": 18
+        },
+        {
+            "lane_y_set": "y_shift",
+            "asm_x_pattern": "all15",
+            "smelter_offset": 2,
+            "miner_pick": "leftmost",
+            "max_route_dist": 25
+        },
+        {
+            "lane_y_set": "y_v1",
+            "asm_x_pattern": "stagger15_17",
+            "smelter_offset": 2,
+            "miner_pick": "closest_y",
+            "max_route_dist": 25
+        },
+        {
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "stagger15_17",
+            "smelter_offset": 2,
+            "miner_pick": "closest_y",
+            "max_route_dist": 18
         }
     ]
 }

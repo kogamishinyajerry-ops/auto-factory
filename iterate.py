@@ -31,8 +31,8 @@ import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-FACTORY_PLAN = HERE / "factory_plan.py"
-LOG_PATH = HERE / "results" / "iterate.jsonl"
+DEFAULT_FACTORY_PLAN = HERE / "factory_plan.py"
+DEFAULT_LOG_PATH = HERE / "results" / "iterate.jsonl"
 
 CONFIG_MARKER_START = "# === AUTORESEARCH CONFIG START ==="
 CONFIG_MARKER_END = "# === AUTORESEARCH CONFIG END ==="
@@ -85,8 +85,29 @@ def parse_args() -> argparse.Namespace:
         help="final bench size after the loop terminates",
     )
     ap.add_argument("--seed", type=int, default=42)
-    ap.add_argument("--reset", action="store_true", help="start from RESET_CONFIG instead of current factory_plan.py")
+    ap.add_argument("--reset", action="store_true", help="start from RESET_CONFIG instead of the target file's current CONFIG")
     ap.add_argument("--quiet", action="store_true")
+    # Tournament hooks — let multiple iterate workers run in parallel.
+    ap.add_argument(
+        "--target-file",
+        default=str(DEFAULT_FACTORY_PLAN),
+        help="path to the planner module file to mutate (default: factory_plan.py)",
+    )
+    ap.add_argument(
+        "--planner-name",
+        default="factory_plan",
+        help="dotted module name eval.py imports (must match --target-file's basename)",
+    )
+    ap.add_argument(
+        "--log-file",
+        default=str(DEFAULT_LOG_PATH),
+        help="path to JSONL log (default: results/iterate.jsonl)",
+    )
+    ap.add_argument(
+        "--eval-out-dir",
+        default="results",
+        help="--out-dir passed to eval.py (each worker should use a unique dir)",
+    )
     return ap.parse_args()
 
 
@@ -126,25 +147,23 @@ def _extract_balanced_dict(block: str) -> str:
     raise SystemExit("CONFIG literal not balanced (unmatched braces).")
 
 
-def read_config() -> dict:
-    text = FACTORY_PLAN.read_text()
+def read_config(path: Path = DEFAULT_FACTORY_PLAN) -> dict:
+    text = path.read_text()
     s = text.find(CONFIG_MARKER_START)
     e = text.find(CONFIG_MARKER_END)
     if s < 0 or e < 0:
         raise SystemExit(
-            "AUTORESEARCH markers not found in factory_plan.py — refusing to mutate."
+            f"AUTORESEARCH markers not found in {path} — refusing to mutate."
         )
     block = text[s + len(CONFIG_MARKER_START):e]
     literal = _extract_balanced_dict(block)
-    # safe-ish: we control the source file. ast.literal_eval can't handle
-    # bare None/True/False from older Python but 3.9+ accepts them.
     import ast
 
     return ast.literal_eval(literal)
 
 
-def write_config(cfg: dict) -> None:
-    text = FACTORY_PLAN.read_text()
+def write_config(cfg: dict, path: Path = DEFAULT_FACTORY_PLAN) -> None:
+    text = path.read_text()
     s = text.find(CONFIG_MARKER_START)
     e = text.find(CONFIG_MARKER_END)
     rendered = "CONFIG = " + _render_python(cfg, indent=0)
@@ -154,7 +173,7 @@ def write_config(cfg: dict) -> None:
         f"{rendered}\n"
     )
     new_text = text[:s] + new_block + text[e:]
-    FACTORY_PLAN.write_text(new_text)
+    path.write_text(new_text)
 
 
 def _render_python(v, indent: int = 0) -> str:
@@ -188,18 +207,20 @@ def _render_python(v, indent: int = 0) -> str:
 # ---- evaluation --------------------------------------------------------
 
 
-def evaluate(maps: int) -> float:
-    """Run eval.py against factory_plan and return mean_score."""
+def evaluate(maps: int, planner_name: str, eval_out_dir: str) -> float:
+    """Run eval.py against the given planner and return mean_score."""
     proc = subprocess.run(
         [
             sys.executable,
             str(HERE / "eval.py"),
             "--planner",
-            "factory_plan",
+            planner_name,
             "--maps",
             str(maps),
             "--no-png",
             "--no-jsonl",
+            "--out-dir",
+            eval_out_dir,
         ],
         cwd=HERE,
         capture_output=True,
@@ -209,7 +230,10 @@ def evaluate(maps: int) -> float:
         print(proc.stdout, file=sys.stderr)
         print(proc.stderr, file=sys.stderr)
         return float("-inf")
-    summary = json.loads((HERE / "results" / "summary.json").read_text())
+    summary_path = Path(eval_out_dir)
+    if not summary_path.is_absolute():
+        summary_path = HERE / summary_path
+    summary = json.loads((summary_path / "summary.json").read_text())
     return float(summary["mean_score"])
 
 
@@ -297,23 +321,30 @@ def _config_signature(cfg: dict) -> tuple:
 
 def main() -> int:
     args = parse_args()
-    LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    log_fh = LOG_PATH.open("a")
+    target = Path(args.target_file)
+    if not target.is_absolute():
+        target = HERE / target
+    log_path = Path(args.log_file)
+    if not log_path.is_absolute():
+        log_path = HERE / log_path
+    log_path.parent.mkdir(parents=True, exist_ok=True)
+    log_fh = log_path.open("a")
 
     rng = random.Random(args.seed)
 
     if args.reset:
         initial_cfg = dict(RESET_CONFIG)
-        write_config(initial_cfg)
+        write_config(initial_cfg, path=target)
     else:
-        initial_cfg = read_config()
+        initial_cfg = read_config(path=target)
 
     print(f"AutoResearch loop — budget={args.budget_sec}s, max_iters={args.max_iters}, eval_maps={args.eval_maps}")
+    print(f"  target file: {target.name}   planner: {args.planner_name}")
     print(f"Starting CONFIG: {initial_cfg}")
 
     best_cfg = dict(initial_cfg)
-    best_score = evaluate(args.eval_maps)
-    write_config(best_cfg)  # ensure file matches
+    best_score = evaluate(args.eval_maps, args.planner_name, args.eval_out_dir)
+    write_config(best_cfg, path=target)  # ensure file matches
     print(f"  baseline score: {best_score:.3f}\n")
 
     log_fh.write(
@@ -354,15 +385,15 @@ def main() -> int:
             continue
         tried.add(cand_key)
 
-        write_config(candidate)
-        score = evaluate(args.eval_maps)
+        write_config(candidate, path=target)
+        score = evaluate(args.eval_maps, args.planner_name, args.eval_out_dir)
         delta = score - best_score
         accept = score > best_score
         if accept:
             best_score = score
             best_cfg = candidate
         else:
-            write_config(best_cfg)  # revert
+            write_config(best_cfg, path=target)  # revert
 
         log_fh.write(
             json.dumps(
@@ -392,12 +423,12 @@ def main() -> int:
             )
 
     # finalise
-    write_config(best_cfg)
+    write_config(best_cfg, path=target)
     print(f"\nLoop done. Best CONFIG: {best_cfg}")
     print(f"  best score (eval_maps={args.eval_maps}):  {best_score:.3f}")
     print(f"\nFinal {args.bench_maps}-map bench of best CONFIG…")
-    final = evaluate(args.bench_maps)
-    print(f"  factory_plan ({args.bench_maps} maps) mean: {final:.3f}")
+    final = evaluate(args.bench_maps, args.planner_name, args.eval_out_dir)
+    print(f"  {args.planner_name} ({args.bench_maps} maps) mean: {final:.3f}")
     log_fh.write(
         json.dumps(
             {
