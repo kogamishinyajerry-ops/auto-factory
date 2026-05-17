@@ -15,12 +15,15 @@ W_CROSSING = 0.5
 W_ENERGY = 0.0005     # energy_total accumulates over ticks; keep weight small
 W_BUILDING = 0.05
 W_CONGESTION = 0.001  # per congested belt-tick
+W_DIVERSITY = 3.0     # per distinct plate type delivered to any assembler
+                      # → +6 for iron+copper, +12 for all four ores
 
 
 @dataclass
 class ScoreBreakdown:
     total: float
     throughput: float
+    diversity_bonus: float
     crossing_pen: float
     energy_pen: float
     building_pen: float
@@ -32,6 +35,7 @@ class ScoreBreakdown:
         return {
             "total": round(self.total, 3),
             "throughput": round(self.throughput, 3),
+            "diversity_bonus": round(self.diversity_bonus, 3),
             "crossing_pen": round(self.crossing_pen, 3),
             "energy_pen": round(self.energy_pen, 3),
             "building_pen": round(self.building_pen, 3),
@@ -46,6 +50,7 @@ def score_plan(sim: SimResult) -> ScoreBreakdown:
         return ScoreBreakdown(
             total=-1000.0,
             throughput=0.0,
+            diversity_bonus=0.0,
             crossing_pen=0.0,
             energy_pen=0.0,
             building_pen=0.0,
@@ -55,15 +60,20 @@ def score_plan(sim: SimResult) -> ScoreBreakdown:
         )
 
     throughput = W_THROUGHPUT * sim.widgets_per_minute
+    diversity_bonus = W_DIVERSITY * sim.distinct_plates_used
     crossing_pen = W_CROSSING * sim.crossings
     energy_pen = W_ENERGY * sim.energy_total
     building_pen = W_BUILDING * sim.building_cost
     congestion_pen = W_CONGESTION * sim.congestion
 
-    total = throughput - crossing_pen - energy_pen - building_pen - congestion_pen
+    total = (
+        throughput + diversity_bonus
+        - crossing_pen - energy_pen - building_pen - congestion_pen
+    )
     return ScoreBreakdown(
         total=total,
         throughput=throughput,
+        diversity_bonus=diversity_bonus,
         crossing_pen=crossing_pen,
         energy_pen=energy_pen,
         building_pen=building_pen,

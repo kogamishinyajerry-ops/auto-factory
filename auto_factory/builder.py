@@ -3,11 +3,15 @@
 A *spec* fully describes how the planner should lay out lanes:
 
     {
-      "lane_ys":         [int, ...],          # vertical placement of each lane
-      "asm_xs":          [int, ...],          # asm column per lane (same length)
-      "smelter_offset":  int,                  # smelter_x = asm_x - offset
+      "lane_ys":         [int, ...],            # vertical placement of each lane
+      "asm_xs":          [int, ...],            # asm column per lane (same length)
+      "lane_resources":  [(Resource, Resource), ...],
+                                                # ore types this lane mines.
+                                                # defaults to (iron, copper) per
+                                                # lane if absent.
+      "smelter_offset":  int,                    # smelter_x = asm_x - offset
       "miner_pick":      "closest_y" | "leftmost" | "min_route",
-      "max_route_dist":  int or None,          # skip lane if min route > this
+      "max_route_dist":  int or None,            # skip lane if min route > this
     }
 
 `build_from_spec(gmap, spec)` returns a Plan. Each lane is built atomically
@@ -40,6 +44,14 @@ def build_from_spec(gmap: GameMap, spec: dict) -> Plan:
         raise ValueError(
             f"lane_ys ({len(lane_ys)}) and asm_xs ({len(asm_xs)}) must match"
         )
+    lane_resources: List[Tuple[Resource, Resource]] = spec.get(
+        "lane_resources",
+        [(Resource.IRON, Resource.COPPER)] * len(lane_ys),
+    )
+    if len(lane_resources) != len(lane_ys):
+        raise ValueError(
+            f"lane_resources ({len(lane_resources)}) must match lane count ({len(lane_ys)})"
+        )
     smelter_offset: int = spec.get("smelter_offset", 3)
     miner_pick: str = spec.get("miner_pick", "closest_y")
     max_route: Optional[int] = spec.get("max_route_dist")
@@ -47,48 +59,51 @@ def build_from_spec(gmap: GameMap, spec: dict) -> Plan:
     by_type: Dict[Resource, List[Tuple[int, int]]] = {}
     for pos, r in gmap.resources.items():
         by_type.setdefault(r, []).append(pos)
-    if Resource.IRON not in by_type or Resource.COPPER not in by_type:
-        return p
-
-    iron_cells = sorted(by_type[Resource.IRON], key=lambda c: (c[1], c[0]))
-    copper_cells = sorted(by_type[Resource.COPPER], key=lambda c: (c[1], c[0]))
 
     used: Set[Tuple[int, int]] = set()
-    for lane_y, asm_x in zip(lane_ys, asm_xs):
+    for lane_y, asm_x, (r_north, r_south) in zip(lane_ys, asm_xs, lane_resources):
         sm_x = asm_x - smelter_offset
         if sm_x < 2 or lane_y < 1 or lane_y >= gmap.height - 1:
             continue
         if asm_x >= gmap.width - 1:
             continue
-
-        sm_iron_target = (sm_x, lane_y - 1)
-        sm_cu_target = (sm_x, lane_y + 1)
-
-        iron_pos = _pick_miner(iron_cells, lane_y, sm_iron_target, used, miner_pick)
-        if iron_pos is None:
+        # need at least one cell of each requested resource on the map
+        if r_north not in by_type or r_south not in by_type:
             continue
-        if max_route is not None and _manhattan(iron_pos, sm_iron_target) > max_route:
+        if r_north == r_south:
+            continue  # assembler needs two DISTINCT plate types
+
+        cells_north = sorted(by_type[r_north], key=lambda c: (c[1], c[0]))
+        cells_south = sorted(by_type[r_south], key=lambda c: (c[1], c[0]))
+
+        sm_north_target = (sm_x, lane_y - 1)
+        sm_south_target = (sm_x, lane_y + 1)
+
+        miner_n = _pick_miner(cells_north, lane_y, sm_north_target, used, miner_pick)
+        if miner_n is None:
             continue
-        copper_pos = _pick_miner(
-            copper_cells, lane_y, sm_cu_target, used | {iron_pos}, miner_pick
+        if max_route is not None and _manhattan(miner_n, sm_north_target) > max_route:
+            continue
+        miner_s = _pick_miner(
+            cells_south, lane_y, sm_south_target, used | {miner_n}, miner_pick
         )
-        if copper_pos is None:
+        if miner_s is None:
             continue
-        if max_route is not None and _manhattan(copper_pos, sm_cu_target) > max_route:
+        if max_route is not None and _manhattan(miner_s, sm_south_target) > max_route:
             continue
 
         if _try_build_lane(
             p,
             occupied,
             gmap,
-            iron_pos,
-            copper_pos,
+            miner_n,
+            miner_s,
             lane_y,
             asm_x,
             sm_x,
         ):
-            used.add(iron_pos)
-            used.add(copper_pos)
+            used.add(miner_n)
+            used.add(miner_s)
     return p
 
 
@@ -124,15 +139,15 @@ def _try_build_lane(
     p: Plan,
     occupied: Set[Tuple[int, int]],
     gmap: GameMap,
-    iron_pos: Tuple[int, int],
-    copper_pos: Tuple[int, int],
+    miner_north: Tuple[int, int],
+    miner_south: Tuple[int, int],
     lane_y: int,
     asm_x: int,
     sm_x: int,
 ) -> bool:
     out_x = gmap.width - 1
-    sm_iron = (sm_x, lane_y - 1)
-    sm_cu = (sm_x, lane_y + 1)
+    sm_north = (sm_x, lane_y - 1)
+    sm_south = (sm_x, lane_y + 1)
     asm = (asm_x, lane_y)
     out = (out_x, lane_y)
 
@@ -146,10 +161,10 @@ def _try_build_lane(
         return False
 
     machines = [
-        Building(BuildingType.MINER, *iron_pos),
-        Building(BuildingType.MINER, *copper_pos),
-        Building(BuildingType.SMELTER, *sm_iron),
-        Building(BuildingType.SMELTER, *sm_cu),
+        Building(BuildingType.MINER, *miner_north),
+        Building(BuildingType.MINER, *miner_south),
+        Building(BuildingType.SMELTER, *sm_north),
+        Building(BuildingType.SMELTER, *sm_south),
         Building(BuildingType.ASSEMBLER, *asm),
         Building(BuildingType.OUTPUT, *out),
     ]
@@ -160,10 +175,10 @@ def _try_build_lane(
         occupied.add(b.pos)
 
     routes = [
-        (iron_pos, sm_iron),
-        (copper_pos, sm_cu),
-        (sm_iron, asm),
-        (sm_cu, asm),
+        (miner_north, sm_north),
+        (miner_south, sm_south),
+        (sm_north, asm),
+        (sm_south, asm),
         (asm, out),
     ]
     for src, dst in routes:

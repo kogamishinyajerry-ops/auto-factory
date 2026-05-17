@@ -43,6 +43,7 @@ class SimResult:
     energy_total: float = 0.0
     building_cost: float = 0.0
     raw_per_minute: Dict[str, float] = field(default_factory=dict)
+    distinct_plates_used: int = 0   # 0..4; how many plate types reached an assembler
 
 
 def _validate(plan: Plan, gmap: GameMap) -> Tuple[bool, str, Dict[Tuple[int, int], Building]]:
@@ -95,6 +96,7 @@ def simulate(plan: Plan, gmap: GameMap, ticks: int = SIM_TICKS) -> SimResult:
     output_count = 0
     raw_counts: Dict[str, int] = {}
     congestion = 0
+    plate_types_seen: set[str] = set()  # which plate types ever entered an assembler
 
     for pos, b in bld.items():
         if b.type == BuildingType.BELT:
@@ -238,6 +240,7 @@ def simulate(plan: Plan, gmap: GameMap, ticks: int = SIM_TICKS) -> SimResult:
                 else:  # assembler
                     if item in PLATE_TYPES and len(mt["input"]) < 6:
                         mt["input"].append(item)
+                        plate_types_seen.add(item)
                         queue.pop(0)
             elif target.type == BuildingType.OUTPUT:
                 if item == "widget":
@@ -275,4 +278,5 @@ def simulate(plan: Plan, gmap: GameMap, ticks: int = SIM_TICKS) -> SimResult:
         energy_total=energy,
         building_cost=bcost,
         raw_per_minute=raw_per_minute,
+        distinct_plates_used=len(plate_types_seen),
     )
