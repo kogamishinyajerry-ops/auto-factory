@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.DS_Store
+
+# Transient eval/iterate artifacts — regenerated on every run.
+results/summary.json
+results/_gallery_tmp/
+results/plans/
+results/diff/
+
+# Keep only narrative-quality outputs in git:
+#   results/checkpoint*.png  story-arc gallery + progress charts
+#   results/runs.jsonl       cross-run bench history
+#   results/iterate.jsonl    autonomous loop convergence log
