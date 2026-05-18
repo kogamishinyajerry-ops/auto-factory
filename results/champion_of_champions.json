@@ -1,0 +1,305 @@
+{
+  "sources": [
+    "results/tournament_gpt55_xhigh.json",
+    "results/tournament_gpt54_seed400.json",
+    "results/tournament_gpt54_seed600.json",
+    "results/tournament_llm_seeded_6w.json",
+    "results/tournament_llm_seeded.json"
+  ],
+  "n_unique_strategies": 108,
+  "top": [
+    {
+      "rank": 1,
+      "individual_score": 30.989,
+      "strategy": {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "all17",
+        "smelter_offset": 4,
+        "miner_pick": "closest_y",
+        "max_route_dist": null,
+        "resource_pattern": "rotate4"
+      },
+      "seen_in": [
+        "results/tournament_gpt54_seed400.json",
+        "results/tournament_gpt54_seed400.json"
+      ]
+    },
+    {
+      "rank": 2,
+      "individual_score": 30.265,
+      "strategy": {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "stagger15_17",
+        "smelter_offset": 4,
+        "miner_pick": "closest_y",
+        "max_route_dist": 25,
+        "resource_pattern": "all_ic"
+      },
+      "seen_in": [
+        "results/tournament_llm_seeded_6w.json",
+        "results/tournament_llm_seeded_6w.json"
+      ]
+    },
+    {
+      "rank": 3,
+      "individual_score": 30.114,
+      "strategy": {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "stagger17_16",
+        "smelter_offset": 2,
+        "miner_pick": "closest_y",
+        "max_route_dist": null,
+        "resource_pattern": "rotate4"
+      },
+      "seen_in": [
+        "results/tournament_gpt55_xhigh.json",
+        "results/tournament_gpt55_xhigh.json"
+      ]
+    },
+    {
+      "rank": 4,
+      "individual_score": 29.619,
+      "strategy": {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "stagger15_17",
+        "smelter_offset": 4,
+        "miner_pick": "leftmost",
+        "max_route_dist": null,
+        "resource_pattern": "rotate_all"
+      },
+      "seen_in": [
+        "results/tournament_gpt55_xhigh.json",
+        "results/tournament_gpt55_xhigh.json"
+      ]
+    },
+    {
+      "rank": 5,
+      "individual_score": 29.567,
+      "strategy": {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "all17",
+        "smelter_offset": 2,
+        "miner_pick": "leftmost",
+        "max_route_dist": null,
+        "resource_pattern": "rotate_all"
+      },
+      "seen_in": [
+        "results/tournament_gpt55_xhigh.json",
+        "results/tournament_gpt55_xhigh.json"
+      ]
+    },
+    {
+      "rank": 6,
+      "individual_score": 28.658,
+      "strategy": {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "all16",
+        "smelter_offset": 3,
+        "miner_pick": "leftmost",
+        "max_route_dist": 25,
+        "resource_pattern": "rotate_all"
+      },
+      "seen_in": [
+        "results/tournament_llm_seeded_6w.json",
+        "results/tournament_llm_seeded_6w.json"
+      ]
+    },
+    {
+      "rank": 7,
+      "individual_score": 28.462,
+      "strategy": {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "stagger17_15",
+        "smelter_offset": 3,
+        "miner_pick": "leftmost",
+        "max_route_dist": 25,
+        "resource_pattern": "rotate_all"
+      },
+      "seen_in": [
+        "results/tournament_gpt54_seed400.json",
+        "results/tournament_gpt54_seed400.json"
+      ]
+    },
+    {
+      "rank": 8,
+      "individual_score": 27.522,
+      "strategy": {
+        "lane_y_set": "y_default",
+        "asm_x_pattern": "stagger17_16",
+        "smelter_offset": 3,
+        "miner_pick": "leftmost",
+        "max_route_dist": null,
+        "resource_pattern": "rotate4"
+      },
+      "seen_in": [
+        "results/tournament_llm_seeded.json",
+        "results/tournament_llm_seeded.json"
+      ]
+    },
+    {
+      "rank": 9,
+      "individual_score": 27.209,
+      "strategy": {
+        "lane_y_set": "y_shift",
+        "asm_x_pattern": "all17",
+        "smelter_offset": 2,
+        "miner_pick": "leftmost",
+        "max_route_dist": 25,
+        "resource_pattern": "rotate4"
+      },
+      "seen_in": [
+        "results/tournament_llm_seeded.json",
+        "results/tournament_llm_seeded.json"
+      ]
+    },
+    {
+      "rank": 10,
+      "individual_score": 27.082,
+      "strategy": {
+        "lane_y_set": "y_default",
+        "asm_x_pattern": "stagger17_15",
+        "smelter_offset": 3,
+        "miner_pick": "leftmost",
+        "max_route_dist": null,
+        "resource_pattern": "rotate4"
+      },
+      "seen_in": [
+        "results/tournament_gpt54_seed600.json",
+        "results/tournament_gpt54_seed600.json"
+      ]
+    },
+    {
+      "rank": 11,
+      "individual_score": 27.063,
+      "strategy": {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "all16",
+        "smelter_offset": 3,
+        "miner_pick": "closest_y",
+        "max_route_dist": 18,
+        "resource_pattern": "rotate_all"
+      },
+      "seen_in": [
+        "results/tournament_gpt54_seed600.json",
+        "results/tournament_gpt54_seed600.json"
+      ]
+    },
+    {
+      "rank": 12,
+      "individual_score": 26.879,
+      "strategy": {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "stagger17_16",
+        "smelter_offset": 4,
+        "miner_pick": "closest_y",
+        "max_route_dist": 18,
+        "resource_pattern": "all_ic"
+      },
+      "seen_in": [
+        "results/tournament_llm_seeded_6w.json",
+        "results/tournament_llm_seeded_6w.json"
+      ]
+    }
+  ],
+  "merged_bench_score": 44.09,
+  "merged_portfolio": {
+    "strategies": [
+      {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "all17",
+        "smelter_offset": 4,
+        "miner_pick": "closest_y",
+        "max_route_dist": null,
+        "resource_pattern": "rotate4"
+      },
+      {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "stagger15_17",
+        "smelter_offset": 4,
+        "miner_pick": "closest_y",
+        "max_route_dist": 25,
+        "resource_pattern": "all_ic"
+      },
+      {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "stagger17_16",
+        "smelter_offset": 2,
+        "miner_pick": "closest_y",
+        "max_route_dist": null,
+        "resource_pattern": "rotate4"
+      },
+      {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "stagger15_17",
+        "smelter_offset": 4,
+        "miner_pick": "leftmost",
+        "max_route_dist": null,
+        "resource_pattern": "rotate_all"
+      },
+      {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "all17",
+        "smelter_offset": 2,
+        "miner_pick": "leftmost",
+        "max_route_dist": null,
+        "resource_pattern": "rotate_all"
+      },
+      {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "all16",
+        "smelter_offset": 3,
+        "miner_pick": "leftmost",
+        "max_route_dist": 25,
+        "resource_pattern": "rotate_all"
+      },
+      {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "stagger17_15",
+        "smelter_offset": 3,
+        "miner_pick": "leftmost",
+        "max_route_dist": 25,
+        "resource_pattern": "rotate_all"
+      },
+      {
+        "lane_y_set": "y_default",
+        "asm_x_pattern": "stagger17_16",
+        "smelter_offset": 3,
+        "miner_pick": "leftmost",
+        "max_route_dist": null,
+        "resource_pattern": "rotate4"
+      },
+      {
+        "lane_y_set": "y_shift",
+        "asm_x_pattern": "all17",
+        "smelter_offset": 2,
+        "miner_pick": "leftmost",
+        "max_route_dist": 25,
+        "resource_pattern": "rotate4"
+      },
+      {
+        "lane_y_set": "y_default",
+        "asm_x_pattern": "stagger17_15",
+        "smelter_offset": 3,
+        "miner_pick": "leftmost",
+        "max_route_dist": null,
+        "resource_pattern": "rotate4"
+      },
+      {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "all16",
+        "smelter_offset": 3,
+        "miner_pick": "closest_y",
+        "max_route_dist": 18,
+        "resource_pattern": "rotate_all"
+      },
+      {
+        "lane_y_set": "y_dense",
+        "asm_x_pattern": "stagger17_16",
+        "smelter_offset": 4,
+        "miner_pick": "closest_y",
+        "max_route_dist": 18,
+        "resource_pattern": "all_ic"
+      }
+    ]
+  }
+}
