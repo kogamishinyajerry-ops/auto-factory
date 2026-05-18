@@ -42,6 +42,7 @@ SOURCE_RUNS = [
     "results/tournament_gpt54_seed600.json",
     "results/tournament_llm_seeded_6w.json",
     "results/tournament_llm_seeded.json",
+    "results/tournament_anti_sota.json",
 ]
 
 

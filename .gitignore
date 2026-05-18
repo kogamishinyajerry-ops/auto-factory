@@ -14,6 +14,7 @@ factory_plan_w*.py
 factory_plan_llm_w*.py
 results/_workers/
 results/_workers_llm_seeded/
+results/_workers_anti_sota/
 
 # Keep only narrative-quality outputs in git:
 #   results/checkpoint*.png  story-arc gallery + progress charts
