@@ -46,6 +46,8 @@ SOURCE_RUNS = [
     "results/tournament_expanded_run2.json",  # Phase O
     "results/tournament_expanded_run3.json",  # Phase P
     "results/tournament_expanded_run4.json",  # Phase P
+    "results/tournament_adaptive_run1.json",  # Phase R
+    "results/tournament_adaptive_run2.json",  # Phase R
 ]
 
 
@@ -90,13 +92,15 @@ def main() -> int:
     print(f"  building {len(candidates)} × {args.bench_maps} score matrix…")
 
     # build score matrix: rows = strategies, cols = maps
+    # Phase R: pass gmap to _expand_strategy so adaptive patterns activate
+    # (otherwise they'd fall back to iron-copper and undersell themselves).
     score_matrix: list[list[float]] = []
     for ci, s in enumerate(candidates):
-        spec = factory_plan._expand_strategy(s)
         row = []
         for m in range(args.bench_maps):
             gmap = generate_map(seed=args.seed_base + m)
             try:
+                spec = factory_plan._expand_strategy(s, gmap=gmap)
                 plan = build_from_spec(gmap, spec)
                 sim = simulate(plan, gmap, ticks=600)
                 row.append(score_plan(sim).total)

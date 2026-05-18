@@ -82,7 +82,18 @@ _PAIRS_ALL = [
 # Each pattern is a function from "number of lanes" to a list of (ore, ore)
 # pairs, one per lane. Lanes whose pair has the same ore on both sides get
 # skipped by the builder (assembler needs two DISTINCT plates).
-RESOURCE_PATTERNS: Dict[str, Callable[[int], List[Tuple[Resource, Resource]]]] = {
+def _available_pairs(gmap):
+    """Phase R helper: return the subset of _PAIRS_ALL whose BOTH resources
+    are actually present on this map. Falls back to [(IRON, COPPER)] if the
+    gmap is missing (e.g. pattern is called from a context with no map)."""
+    if gmap is None:
+        return [(Resource.IRON, Resource.COPPER)]
+    present = {r for r in gmap.resources.values()}
+    pairs = [(a, b) for (a, b) in _PAIRS_ALL if a in present and b in present]
+    return pairs or [(Resource.IRON, Resource.COPPER)]
+
+
+RESOURCE_PATTERNS: Dict[str, Callable] = {
     "all_ic":     lambda n: [(Resource.IRON, Resource.COPPER)] * n,
     "all_iko":    lambda n: [(Resource.IRON, Resource.COAL)] * n,
     "all_cuoi":   lambda n: [(Resource.COPPER, Resource.OIL)] * n,
@@ -93,6 +104,13 @@ RESOURCE_PATTERNS: Dict[str, Callable[[int], List[Tuple[Resource, Resource]]]] =
     "rotate_rev":     lambda n: [_PAIRS_ALL[(5 - i) % 6] for i in range(n)],  # reverse cycle
     "iron_split":     lambda n: [(Resource.IRON, Resource.COPPER) if i < n // 2 else (Resource.IRON, Resource.OIL) for i in range(n)],
     "skip_alt":       lambda n: [_PAIRS_ALL[(i * 2) % 6] for i in range(n)],  # 0,2,4,0,2,4
+    # Phase R: map-aware adaptive patterns. These take (n, gmap) and pick
+    # from pairs that ACTUALLY exist on the current map. Avoids dropping
+    # lanes on resource-scarce maps.
+    "adaptive_pairs":  lambda n, gmap: [_available_pairs(gmap)[0]] * n,
+    "adaptive_rotate": lambda n, gmap: [
+        _available_pairs(gmap)[i % len(_available_pairs(gmap))] for i in range(n)
+    ],
 }
 
 SMELTER_OFFSETS = [2, 3, 4]
@@ -105,12 +123,12 @@ MAX_ROUTE_VALUES = [None, 10, 12, 15, 18, 25]
 CONFIG = {
     "strategies": [
         {
-            "lane_y_set": "y_dense",
-            "asm_x_pattern": "all17",
-            "smelter_offset": 4,
-            "miner_pick": "closest_y",
-            "max_route_dist": None,
-            "resource_pattern": "rotate4"
+            "lane_y_set": "y_alt_dense",
+            "asm_x_pattern": "stagger17_15",
+            "smelter_offset": 2,
+            "miner_pick": "leftmost",
+            "max_route_dist": 25,
+            "resource_pattern": "adaptive_rotate"
         },
         {
             "lane_y_set": "y_dense",
@@ -122,8 +140,8 @@ CONFIG = {
         },
         {
             "lane_y_set": "y_dense",
-            "asm_x_pattern": "stagger17_16",
-            "smelter_offset": 2,
+            "asm_x_pattern": "all17",
+            "smelter_offset": 4,
             "miner_pick": "closest_y",
             "max_route_dist": None,
             "resource_pattern": "rotate4"
@@ -145,42 +163,66 @@ CONFIG = {
             "resource_pattern": "rotate_rev"
         },
         {
-            "lane_y_set": "y_default",
-            "asm_x_pattern": "stagger15_17",
-            "smelter_offset": 4,
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "stagger17_16",
+            "smelter_offset": 2,
             "miner_pick": "closest_y",
             "max_route_dist": None,
-            "resource_pattern": "rotate_all"
+            "resource_pattern": "rotate4"
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "all17",
+            "smelter_offset": 3,
+            "miner_pick": "leftmost",
+            "max_route_dist": 18,
+            "resource_pattern": "rotate_rev"
         },
         {
             "lane_y_set": "y_default",
-            "asm_x_pattern": "all16",
+            "asm_x_pattern": "all17",
             "smelter_offset": 3,
-            "miner_pick": "leftmost",
+            "miner_pick": "closest_y",
             "max_route_dist": None,
-            "resource_pattern": "rotate_all"
+            "resource_pattern": "adaptive_rotate"
         },
         {
-            "lane_y_set": "y_shift",
+            "lane_y_set": "y_6_balanced",
             "asm_x_pattern": "all16",
-            "smelter_offset": 3,
+            "smelter_offset": 4,
             "miner_pick": "closest_y",
             "max_route_dist": 25,
-            "resource_pattern": "all_iko"
-        },
-        {
-            "lane_y_set": "y_top_heavy",
-            "asm_x_pattern": "all15",
-            "smelter_offset": 4,
-            "miner_pick": "leftmost",
-            "max_route_dist": None,
             "resource_pattern": "rotate_rev"
         },
         {
             "lane_y_set": "y_dense",
-            "asm_x_pattern": "stagger15_17",
+            "asm_x_pattern": "all17",
             "smelter_offset": 3,
             "miner_pick": "min_route",
+            "max_route_dist": 15,
+            "resource_pattern": "all_ic"
+        },
+        {
+            "lane_y_set": "y_alt_dense",
+            "asm_x_pattern": "all14",
+            "smelter_offset": 4,
+            "miner_pick": "min_route",
+            "max_route_dist": 10,
+            "resource_pattern": "rotate_rev"
+        },
+        {
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "all17",
+            "smelter_offset": 4,
+            "miner_pick": "closest_y",
+            "max_route_dist": None,
+            "resource_pattern": "rotate4"
+        },
+        {
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "stagger15_17",
+            "smelter_offset": 4,
+            "miner_pick": "closest_y",
             "max_route_dist": None,
             "resource_pattern": "rotate_all"
         },
@@ -209,12 +251,12 @@ CONFIG = {
             "resource_pattern": "all_ic"
         },
         {
-            "lane_y_set": "y_dense",
-            "asm_x_pattern": "all17",
-            "smelter_offset": 3,
-            "miner_pick": "min_route",
-            "max_route_dist": 15,
-            "resource_pattern": "all_ic"
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "stagger17_15",
+            "smelter_offset": 2,
+            "miner_pick": "closest_y",
+            "max_route_dist": 18,
+            "resource_pattern": "all_cuoi"
         },
         {
             "lane_y_set": "y_alt_dense",
@@ -225,36 +267,20 @@ CONFIG = {
             "resource_pattern": "all_iko"
         },
         {
-            "lane_y_set": "y_default",
-            "asm_x_pattern": "stagger17_15",
-            "smelter_offset": 2,
-            "miner_pick": "closest_y",
-            "max_route_dist": 18,
-            "resource_pattern": "all_cuoi"
-        },
-        {
-            "lane_y_set": "y_alt_dense",
-            "asm_x_pattern": "all16",
-            "smelter_offset": 4,
-            "miner_pick": "closest_y",
-            "max_route_dist": 12,
-            "resource_pattern": "rotate_rev"
-        },
-        {
-            "lane_y_set": "y_default",
-            "asm_x_pattern": "all17",
-            "smelter_offset": 4,
-            "miner_pick": "closest_y",
-            "max_route_dist": None,
-            "resource_pattern": "rotate4"
-        },
-        {
-            "lane_y_set": "y_top_heavy",
-            "asm_x_pattern": "triple_17_16_15",
-            "smelter_offset": 2,
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "stagger15_17",
+            "smelter_offset": 3,
             "miner_pick": "min_route",
-            "max_route_dist": 18,
-            "resource_pattern": "rotate_rev"
+            "max_route_dist": None,
+            "resource_pattern": "rotate_all"
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "stagger17_16",
+            "smelter_offset": 3,
+            "miner_pick": "min_route",
+            "max_route_dist": None,
+            "resource_pattern": "adaptive_rotate"
         },
         {
             "lane_y_set": "y_pair_close",
@@ -290,27 +316,27 @@ CONFIG = {
         },
         {
             "lane_y_set": "y_dense",
-            "asm_x_pattern": "stagger17_15",
-            "smelter_offset": 3,
-            "miner_pick": "closest_y",
-            "max_route_dist": 15,
-            "resource_pattern": "rotate4"
-        },
-        {
-            "lane_y_set": "y_dense",
-            "asm_x_pattern": "all17",
-            "smelter_offset": 3,
-            "miner_pick": "leftmost",
-            "max_route_dist": 18,
-            "resource_pattern": "rotate_rev"
-        },
-        {
-            "lane_y_set": "y_dense",
             "asm_x_pattern": "all17",
             "smelter_offset": 2,
             "miner_pick": "leftmost",
             "max_route_dist": None,
             "resource_pattern": "rotate_all"
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "stagger15_17",
+            "smelter_offset": 2,
+            "miner_pick": "min_route",
+            "max_route_dist": 12,
+            "resource_pattern": "skip_alt"
+        },
+        {
+            "lane_y_set": "y_shift",
+            "asm_x_pattern": "stagger18_16",
+            "smelter_offset": 2,
+            "miner_pick": "min_route",
+            "max_route_dist": None,
+            "resource_pattern": "rotate_rev"
         },
         {
             "lane_y_set": "y_6_balanced",
@@ -329,19 +355,19 @@ CONFIG = {
             "resource_pattern": "rotate4"
         },
         {
-            "lane_y_set": "y_default",
-            "asm_x_pattern": "stagger17_15",
-            "smelter_offset": 3,
+            "lane_y_set": "y_top_heavy",
+            "asm_x_pattern": "triple_17_16_15",
+            "smelter_offset": 2,
             "miner_pick": "min_route",
-            "max_route_dist": 15,
-            "resource_pattern": "skip_alt"
+            "max_route_dist": 18,
+            "resource_pattern": "rotate_rev"
         },
         {
-            "lane_y_set": "y_4_balanced",
-            "asm_x_pattern": "all17",
-            "smelter_offset": 2,
-            "miner_pick": "leftmost",
-            "max_route_dist": None,
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "stagger17_15",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": 15,
             "resource_pattern": "rotate4"
         },
         {
@@ -354,11 +380,11 @@ CONFIG = {
         },
         {
             "lane_y_set": "y_default",
-            "asm_x_pattern": "all16",
+            "asm_x_pattern": "stagger17_16",
             "smelter_offset": 2,
             "miner_pick": "closest_y",
-            "max_route_dist": 25,
-            "resource_pattern": "rotate4"
+            "max_route_dist": 15,
+            "resource_pattern": "adaptive_rotate"
         },
         {
             "lane_y_set": "y_dense",
@@ -386,6 +412,22 @@ CONFIG = {
         },
         {
             "lane_y_set": "y_shift",
+            "asm_x_pattern": "all16",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": 18,
+            "resource_pattern": "rotate4"
+        },
+        {
+            "lane_y_set": "y_alt_dense",
+            "asm_x_pattern": "stagger17_16",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": 18,
+            "resource_pattern": "adaptive_rotate"
+        },
+        {
+            "lane_y_set": "y_shift",
             "asm_x_pattern": "all15",
             "smelter_offset": 3,
             "miner_pick": "closest_y",
@@ -401,22 +443,6 @@ CONFIG = {
             "resource_pattern": "all_ic"
         },
         {
-            "lane_y_set": "y_shift",
-            "asm_x_pattern": "all16",
-            "smelter_offset": 3,
-            "miner_pick": "closest_y",
-            "max_route_dist": 18,
-            "resource_pattern": "rotate4"
-        },
-        {
-            "lane_y_set": "y_default",
-            "asm_x_pattern": "stagger17_16",
-            "smelter_offset": 3,
-            "miner_pick": "closest_y",
-            "max_route_dist": None,
-            "resource_pattern": "rotate4"
-        },
-        {
             "lane_y_set": "y_6_balanced",
             "asm_x_pattern": "desc_17",
             "smelter_offset": 3,
@@ -426,19 +452,19 @@ CONFIG = {
         },
         {
             "lane_y_set": "y_shift",
-            "asm_x_pattern": "desc_17",
-            "smelter_offset": 4,
-            "miner_pick": "closest_y",
-            "max_route_dist": 25,
-            "resource_pattern": "rotate_rev"
-        },
-        {
-            "lane_y_set": "y_shift",
             "asm_x_pattern": "all17",
             "smelter_offset": 2,
             "miner_pick": "leftmost",
             "max_route_dist": 25,
             "resource_pattern": "rotate4"
+        },
+        {
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "all17",
+            "smelter_offset": 4,
+            "miner_pick": "min_route",
+            "max_route_dist": None,
+            "resource_pattern": "skip_alt"
         },
         {
             "lane_y_set": "y_narrow",
@@ -463,14 +489,27 @@ CONFIG = {
 _INTERNAL_EVAL_TICKS = 600
 
 
-def _expand_strategy(s: dict) -> dict:
+def _call_pattern(fn, n, gmap=None):
+    """Phase R: call a pattern lambda with either (n) or (n, gmap) depending
+    on its arity. Falls back to (n) for legacy 1-arg patterns."""
+    import inspect
+    try:
+        nparams = len(inspect.signature(fn).parameters)
+    except (TypeError, ValueError):
+        nparams = 1
+    if nparams >= 2:
+        return fn(n, gmap)
+    return fn(n)
+
+
+def _expand_strategy(s: dict, gmap: "GameMap | None" = None) -> dict:
     lane_ys = LANE_Y_SETS[s["lane_y_set"]]
     n = len(lane_ys)
-    asm_xs = ASM_X_PATTERNS[s["asm_x_pattern"]](n)
+    asm_xs = _call_pattern(ASM_X_PATTERNS[s["asm_x_pattern"]], n, gmap)
     # Phase G addition; default to all-iron-copper for backward compat with
     # any old CONFIG someone hand-pastes in.
     rp_key = s.get("resource_pattern", "all_ic")
-    lane_resources = RESOURCE_PATTERNS[rp_key](n)
+    lane_resources = _call_pattern(RESOURCE_PATTERNS[rp_key], n, gmap)
     return {
         "lane_ys": lane_ys,
         "asm_xs": asm_xs,
@@ -484,12 +523,12 @@ def _expand_strategy(s: dict) -> dict:
 def plan(gmap: GameMap) -> Plan:
     strategies = CONFIG["strategies"]
     if len(strategies) == 1:
-        return build_from_spec(gmap, _expand_strategy(strategies[0]))
+        return build_from_spec(gmap, _expand_strategy(strategies[0], gmap=gmap))
 
     best_plan = Plan()
     best_score = float("-inf")
     for s in strategies:
-        candidate = build_from_spec(gmap, _expand_strategy(s))
+        candidate = build_from_spec(gmap, _expand_strategy(s, gmap=gmap))
         sim = simulate(candidate, gmap, ticks=_INTERNAL_EVAL_TICKS)
         sb = score_plan(sim)
         if sb.total > best_score:

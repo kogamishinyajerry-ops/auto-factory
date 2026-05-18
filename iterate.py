@@ -64,6 +64,8 @@ SEARCH_SPACE = {
         "all_ic", "all_iko", "all_cuoi", "all_kool", "rotate4", "rotate_all",
         # Phase O additions:
         "rotate_rev", "iron_split", "skip_alt",
+        # Phase R: map-adaptive patterns
+        "adaptive_pairs", "adaptive_rotate",
     ],
 }
 
