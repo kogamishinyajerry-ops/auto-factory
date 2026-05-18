@@ -44,6 +44,8 @@ SOURCE_RUNS = [
     "results/tournament_anti_sota.json",
     "results/tournament_expanded_run1.json",  # Phase O
     "results/tournament_expanded_run2.json",  # Phase O
+    "results/tournament_expanded_run3.json",  # Phase P
+    "results/tournament_expanded_run4.json",  # Phase P
 ]
 
 

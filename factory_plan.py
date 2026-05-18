@@ -169,6 +169,14 @@ CONFIG = {
             "resource_pattern": "all_iko"
         },
         {
+            "lane_y_set": "y_top_heavy",
+            "asm_x_pattern": "all15",
+            "smelter_offset": 4,
+            "miner_pick": "leftmost",
+            "max_route_dist": None,
+            "resource_pattern": "rotate_rev"
+        },
+        {
             "lane_y_set": "y_dense",
             "asm_x_pattern": "stagger15_17",
             "smelter_offset": 3,
@@ -185,20 +193,268 @@ CONFIG = {
             "resource_pattern": "iron_split"
         },
         {
-            "lane_y_set": "y_top_heavy",
-            "asm_x_pattern": "desc_17",
-            "smelter_offset": 3,
-            "miner_pick": "closest_y",
-            "max_route_dist": 18,
-            "resource_pattern": "skip_alt"
-        },
-        {
             "lane_y_set": "y_v1",
             "asm_x_pattern": "stagger17_16",
             "smelter_offset": 3,
             "miner_pick": "closest_y",
             "max_route_dist": None,
             "resource_pattern": "all_ic"
+        },
+        {
+            "lane_y_set": "y_3_middle",
+            "asm_x_pattern": "stagger17_16",
+            "smelter_offset": 4,
+            "miner_pick": "closest_y",
+            "max_route_dist": 15,
+            "resource_pattern": "all_ic"
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "all17",
+            "smelter_offset": 3,
+            "miner_pick": "min_route",
+            "max_route_dist": 15,
+            "resource_pattern": "all_ic"
+        },
+        {
+            "lane_y_set": "y_alt_dense",
+            "asm_x_pattern": "triple_17_16_15",
+            "smelter_offset": 2,
+            "miner_pick": "closest_y",
+            "max_route_dist": 18,
+            "resource_pattern": "all_iko"
+        },
+        {
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "stagger17_15",
+            "smelter_offset": 2,
+            "miner_pick": "closest_y",
+            "max_route_dist": 18,
+            "resource_pattern": "all_cuoi"
+        },
+        {
+            "lane_y_set": "y_alt_dense",
+            "asm_x_pattern": "all16",
+            "smelter_offset": 4,
+            "miner_pick": "closest_y",
+            "max_route_dist": 12,
+            "resource_pattern": "rotate_rev"
+        },
+        {
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "all17",
+            "smelter_offset": 4,
+            "miner_pick": "closest_y",
+            "max_route_dist": None,
+            "resource_pattern": "rotate4"
+        },
+        {
+            "lane_y_set": "y_top_heavy",
+            "asm_x_pattern": "triple_17_16_15",
+            "smelter_offset": 2,
+            "miner_pick": "min_route",
+            "max_route_dist": 18,
+            "resource_pattern": "rotate_rev"
+        },
+        {
+            "lane_y_set": "y_pair_close",
+            "asm_x_pattern": "all16",
+            "smelter_offset": 2,
+            "miner_pick": "min_route",
+            "max_route_dist": 25,
+            "resource_pattern": "rotate4"
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "stagger17_15",
+            "smelter_offset": 4,
+            "miner_pick": "closest_y",
+            "max_route_dist": 15,
+            "resource_pattern": "rotate_rev"
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "stagger15_17",
+            "smelter_offset": 4,
+            "miner_pick": "closest_y",
+            "max_route_dist": 15,
+            "resource_pattern": "skip_alt"
+        },
+        {
+            "lane_y_set": "y_alt_dense",
+            "asm_x_pattern": "triple_17_16_15",
+            "smelter_offset": 3,
+            "miner_pick": "min_route",
+            "max_route_dist": 12,
+            "resource_pattern": "skip_alt"
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "stagger17_15",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": 15,
+            "resource_pattern": "rotate4"
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "all17",
+            "smelter_offset": 3,
+            "miner_pick": "leftmost",
+            "max_route_dist": 18,
+            "resource_pattern": "rotate_rev"
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "all17",
+            "smelter_offset": 2,
+            "miner_pick": "leftmost",
+            "max_route_dist": None,
+            "resource_pattern": "rotate_all"
+        },
+        {
+            "lane_y_set": "y_6_balanced",
+            "asm_x_pattern": "stagger17_15",
+            "smelter_offset": 2,
+            "miner_pick": "min_route",
+            "max_route_dist": 18,
+            "resource_pattern": "skip_alt"
+        },
+        {
+            "lane_y_set": "y_shift",
+            "asm_x_pattern": "stagger17_15",
+            "smelter_offset": 3,
+            "miner_pick": "min_route",
+            "max_route_dist": 15,
+            "resource_pattern": "rotate4"
+        },
+        {
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "stagger17_15",
+            "smelter_offset": 3,
+            "miner_pick": "min_route",
+            "max_route_dist": 15,
+            "resource_pattern": "skip_alt"
+        },
+        {
+            "lane_y_set": "y_4_balanced",
+            "asm_x_pattern": "all17",
+            "smelter_offset": 2,
+            "miner_pick": "leftmost",
+            "max_route_dist": None,
+            "resource_pattern": "rotate4"
+        },
+        {
+            "lane_y_set": "y_6_balanced",
+            "asm_x_pattern": "stagger15_17",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": 18,
+            "resource_pattern": "rotate_rev"
+        },
+        {
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "all16",
+            "smelter_offset": 2,
+            "miner_pick": "closest_y",
+            "max_route_dist": 25,
+            "resource_pattern": "rotate4"
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "all15",
+            "smelter_offset": 2,
+            "miner_pick": "closest_y",
+            "max_route_dist": 18,
+            "resource_pattern": "all_ic"
+        },
+        {
+            "lane_y_set": "y_pair",
+            "asm_x_pattern": "all17",
+            "smelter_offset": 3,
+            "miner_pick": "min_route",
+            "max_route_dist": 25,
+            "resource_pattern": "skip_alt"
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "all16",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": 18,
+            "resource_pattern": "rotate_all"
+        },
+        {
+            "lane_y_set": "y_shift",
+            "asm_x_pattern": "all15",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": 10,
+            "resource_pattern": "all_ic"
+        },
+        {
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "stagger15_17",
+            "smelter_offset": 3,
+            "miner_pick": "min_route",
+            "max_route_dist": 15,
+            "resource_pattern": "all_ic"
+        },
+        {
+            "lane_y_set": "y_shift",
+            "asm_x_pattern": "all16",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": 18,
+            "resource_pattern": "rotate4"
+        },
+        {
+            "lane_y_set": "y_default",
+            "asm_x_pattern": "stagger17_16",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": None,
+            "resource_pattern": "rotate4"
+        },
+        {
+            "lane_y_set": "y_6_balanced",
+            "asm_x_pattern": "desc_17",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": None,
+            "resource_pattern": "all_ic"
+        },
+        {
+            "lane_y_set": "y_shift",
+            "asm_x_pattern": "desc_17",
+            "smelter_offset": 4,
+            "miner_pick": "closest_y",
+            "max_route_dist": 25,
+            "resource_pattern": "rotate_rev"
+        },
+        {
+            "lane_y_set": "y_shift",
+            "asm_x_pattern": "all17",
+            "smelter_offset": 2,
+            "miner_pick": "leftmost",
+            "max_route_dist": 25,
+            "resource_pattern": "rotate4"
+        },
+        {
+            "lane_y_set": "y_narrow",
+            "asm_x_pattern": "stagger17_15",
+            "smelter_offset": 3,
+            "miner_pick": "closest_y",
+            "max_route_dist": 18,
+            "resource_pattern": "rotate_all"
+        },
+        {
+            "lane_y_set": "y_dense",
+            "asm_x_pattern": "all16",
+            "smelter_offset": 4,
+            "miner_pick": "min_route",
+            "max_route_dist": 12,
+            "resource_pattern": "rotate_all"
         }
     ]
 }

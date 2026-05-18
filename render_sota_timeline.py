@@ -30,7 +30,9 @@ MILESTONES = [
     ("L.2-B · gpt-5.4 rep",          41.16, (200, 150, 150), "llm"),
     ("M.3 · gpt-5.5 rep 2",          41.89, (160, 200, 160), "llm"),
     ("M.1 · Champion-of-Champions",  44.09, (200, 100, 100), "neg"),
-    ("M.1' · Greedy submodular",     49.79, (50, 170, 90),   "sota"),
+    ("M.1' · Greedy submodular",     49.79, (50, 170, 90),   "llm"),
+    ("O.3 · expanded space K=39",    52.39, (50, 170, 90),   "llm"),
+    ("P.3 · grown pool K=44",        53.19, (50, 170, 90),   "sota"),
 ]
 
 

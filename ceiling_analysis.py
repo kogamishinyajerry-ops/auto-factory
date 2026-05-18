@@ -41,6 +41,8 @@ SOURCE_RUNS = [
     "results/tournament_anti_sota.json",
     "results/tournament_expanded_run1.json",
     "results/tournament_expanded_run2.json",
+    "results/tournament_expanded_run3.json",
+    "results/tournament_expanded_run4.json",
 ]
 
 
