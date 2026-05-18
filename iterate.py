@@ -50,6 +50,9 @@ SEARCH_SPACE = {
         # Phase O additions:
         "y_top_heavy", "y_4_balanced", "y_alt_dense", "y_3_middle",
         "y_6_balanced", "y_pair_close",
+        # Phase S: gmap-aware adaptive lane positioning
+        "adaptive_centroid_3", "adaptive_centroid_5",
+        "adaptive_iron_3", "adaptive_copper_3",
     ],
     "asm_x_pattern": [
         "all17", "all15", "all16",

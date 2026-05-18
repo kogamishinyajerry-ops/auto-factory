@@ -45,6 +45,7 @@ SOURCE_RUNS = [
     "results/tournament_expanded_run4.json",
     "results/tournament_adaptive_run1.json",
     "results/tournament_adaptive_run2.json",
+    "results/tournament_adaptive_lanes_run1.json",
 ]
 
 

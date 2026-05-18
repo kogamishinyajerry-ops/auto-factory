@@ -48,6 +48,7 @@ SOURCE_RUNS = [
     "results/tournament_expanded_run4.json",  # Phase P
     "results/tournament_adaptive_run1.json",  # Phase R
     "results/tournament_adaptive_run2.json",  # Phase R
+    "results/tournament_adaptive_lanes_run1.json",  # Phase S
 ]
 
 
