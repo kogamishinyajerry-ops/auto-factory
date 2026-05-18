@@ -47,16 +47,23 @@ def _now_iso() -> str:
 SEARCH_SPACE = {
     "lane_y_set": [
         "y_default", "y_v1", "y_shift", "y_narrow", "y_dense", "y_pair",
+        # Phase O additions:
+        "y_top_heavy", "y_4_balanced", "y_alt_dense", "y_3_middle",
+        "y_6_balanced", "y_pair_close",
     ],
     "asm_x_pattern": [
         "all17", "all15", "all16",
         "stagger17_15", "stagger15_17", "stagger17_16",
+        # Phase O additions:
+        "all18", "all14", "stagger18_16", "triple_17_16_15", "desc_17",
     ],
     "smelter_offset": [2, 3, 4],
     "miner_pick": ["closest_y", "leftmost", "min_route"],
     "max_route_dist": [None, 10, 12, 15, 18, 25],
     "resource_pattern": [
         "all_ic", "all_iko", "all_cuoi", "all_kool", "rotate4", "rotate_all",
+        # Phase O additions:
+        "rotate_rev", "iron_split", "skip_alt",
     ],
 }
 
